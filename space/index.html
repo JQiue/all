@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="./assert/favicon.ico" />
+    <title>个人空间</title>
+    <style>
+      * {
+        margin: 0;
+        /* padding: 0; */
+        box-sizing: border-box;
+      }
+
+      .progress {
+        position: fixed;
+        left: 0;
+        top: 0;
+        display: inline-block;
+        width: 0;
+        height: 5px;
+        background-color: orange;
+        opacity: 1;
+        transition: width 0.5s, opacity 2s;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app">
+      <header class="header">
+        <h1>JQiue's space</h1>
+        <h2>{{msg}}</h2>
+      </header>
+
+      <main>
+        <section>
+          <form enctype="multipart/form-data" id="uploader">
+            <p><input type="file" name="file" multiple id="upload" /></p>
+            <p><input type="button" value="提交" @click="upload" /></p>
+          </form>
+        </section>
+
+        <section>
+          <div>
+            <h2>文件列表：</h2>
+          </div>
+          <div>
+            <ul id="file-list">
+              <li v-for="(value, name) in files" @click="download(value)">
+                {{ name }}
+              </li>
+            </ul>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <p>
+          @2021-present <a href="https://jinqiu.wang" target="__blank">JQiue</a>
+        </p>
+      </footer>
+    </div>
+    <script
+      crossorigin="anonymous"
+      integrity="sha512-qRXBGtdrMm3Vdv+YXYud0bixlSfZuGz+FmD+vfXuezWYfw4m5Ov0O4liA6UAlKw2rh9MOYULxbhSFrQCsF1hgg=="
+      src="https://lib.baomitu.com/vue/2.6.14/vue.common.dev.js"
+    ></script>
+    <script>
+      const app = new Vue({
+        el: "#app",
+        data: {
+          msg: "hello, world",
+          baseUrl: "http://localhost:3000/api/v1/space/",
+          files: {},
+        },
+        created() {},
+        mounted() {
+          this.getFiles();
+        },
+        methods: {
+          getFiles() {
+            const xhr = new XMLHttpRequest();
+            const that = this;
+            xhr.open("GET", this.baseUrl + "/files");
+            xhr.onreadystatechange = function () {
+              if (xhr.status == 200 && xhr.readyState == 4) {
+                const result = JSON.parse(xhr.responseText);
+                that.files = result;
+              }
+            };
+            xhr.send();
+          },
+          download(value) {
+            fetch(this.baseUrl + "/download?file=" + value.originalname).then(
+              (res) => {
+                const filename = res.headers
+                  .get("content-disposition")
+                  .split("=")[1];
+                res.blob().then((blob) => {
+                  const a = document.createElement("a");
+                  a.href = URL.createObjectURL(blob);
+                  a.download = filename;
+                  a.click();
+                });
+              }
+            );
+          },
+          upload() {
+            const uploader = document.querySelector("#uploader");
+            const up = document.querySelector("#upload");
+            const uploadProgress = document.createElement("div");
+            uploadProgress.className = "progress";
+            document.body.append(uploadProgress);
+            const formData = new FormData(uploader);
+
+            const files = uploader.upload.files;
+            const that = this;
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", this.baseUrl + "/upload");
+            xhr.onload = function () {
+              if (xhr.status == 200) {
+                console.log("上传成功");
+                uploader.upload.value = "";
+              } else {
+                console.log("失败了");
+              }
+            };
+            xhr.upload.addEventListener("progress", function (event) {
+              uploadProgress.style.width =
+                (event.loaded / event.total) * 100 + "%";
+            });
+            xhr.upload.addEventListener("load", function (event) {
+              uploadProgress.style.opacity = 0;
+              uploadProgress.style.backgroundColor = "green";
+              setTimeout(() => {
+                uploadProgress.remove();
+              }, 3000);
+            });
+            xhr.onreadystatechange = function () {
+              if (xhr.status == 200 && xhr.readyState == 4) {
+                that.getFiles();
+              }
+            };
+            console.log(formData.get('file'));
+            xhr.send(formData);
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
