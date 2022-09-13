@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>探针</title>
+</head>
+
+<body>
+    <div id="app">
+        <p> CPU：<progress max="100" :value="info.cpu"></progress>{{info.cpu}}/100%</p>
+        <p> 内存：<progress max="100" :value="info.mem"></progress>{{info.mem}}/100%</p>
+        <p> 硬盘：<progress max="100" :value="info.disk"></progress>{{info.disk}}/100%</p>
+        <p> 网络：下载 {{info.rx}}KB 上传 {{info.tx}}KB</p>
+        <p>系统运行时间：{{(info.uptime / 60 / 60).toFixed(1)}} 小时</p>
+    </div>
+    <script crossorigin="anonymous"
+        integrity="sha512-PhuYrdDBtBeUjY7KTmjRYFFadw8uXXdTmzZyhCHZewYsqZJ0pxFCwU528jRoil42LXMW3ksegQT5zdjkfiR1IA=="
+        src="https://lib.baomitu.com/vue/2.7.7/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        axios.defaults.baseURL = 'http://all.jinqiu.wang/api/v1/probe';
+        Vue.prototype.$http = axios
+        const app = new Vue({
+            el: "#app",
+            data: {
+                msg: "hello, world",
+                info: {
+                    cpu: 0,
+                    mem: 0,
+                    uptime: 0,
+                    disk: 0,
+                    up: 0,
+                    rx: 0,
+                    tx: 0
+                }
+            },
+            created() {
+                this.getInfo();
+            },
+            mounted() {
+                setInterval(this.getInfo, 3000)
+            },
+            methods: {
+                async getInfo() {
+                    const { data } = await this.$http.get('/get')
+                    data.cpu = data.cpu.toFixed(2) * 100;
+                    data.mem = data.mem.toFixed(2) * 100;
+                    data.rx = (data.rx / 1024).toFixed(2)
+                    data.tx = (data.tx / 1024).toFixed(2)
+                    this.info = data;
+                },
+            },
+        });
+    </script>
+</body>
+
+</html>

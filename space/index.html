@@ -62,17 +62,13 @@
         </p>
       </footer>
     </div>
-    <script
-      crossorigin="anonymous"
-      integrity="sha512-qRXBGtdrMm3Vdv+YXYud0bixlSfZuGz+FmD+vfXuezWYfw4m5Ov0O4liA6UAlKw2rh9MOYULxbhSFrQCsF1hgg=="
-      src="https://lib.baomitu.com/vue/2.6.14/vue.common.dev.js"
-    ></script>
+    <script crossorigin="anonymous" integrity="sha512-PhuYrdDBtBeUjY7KTmjRYFFadw8uXXdTmzZyhCHZewYsqZJ0pxFCwU528jRoil42LXMW3ksegQT5zdjkfiR1IA==" src="https://lib.baomitu.com/vue/2.7.7/vue.min.js"></script>
     <script>
       const app = new Vue({
         el: "#app",
         data: {
           msg: "hello, world",
-          baseUrl: "http://localhost:3000/api/v1/space/",
+          baseUrl: "http://all.jinqiu.wang/api/v1/space",
           files: {},
         },
         created() {},
@@ -101,7 +97,7 @@
                 res.blob().then((blob) => {
                   const a = document.createElement("a");
                   a.href = URL.createObjectURL(blob);
-                  a.download = filename;
+                  a.download = decodeURI(filename);
                   a.click();
                 });
               }
@@ -114,7 +110,6 @@
             uploadProgress.className = "progress";
             document.body.append(uploadProgress);
             const formData = new FormData(uploader);
-
             const files = uploader.upload.files;
             const that = this;
             const xhr = new XMLHttpRequest();
