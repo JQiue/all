@@ -4,11 +4,16 @@ const port = 1236;
 const Rotuer = require("./router");
 const bodyParser = require("body-parser");
 
-app.use(express.static('./'))
-app.use(express.static('./space'))
-app.use(express.static('./probe'))
-app.use(express.static('./http-test'))
-app.use(bodyParser.json())
+app.use(express.static("./"));
+app.use(express.static("./space"));
+app.use(express.static("./probe"));
+app.use(express.static("./http-test"));
+app.use(bodyParser.json());
+app.use((req, res)=> {
+  res.set('X -Powered-By', false);
+  res.set('Server', 'all');
+  res.set("X-Content-Type-Options", "nosniff");
+});
 app.use("/api/v1", Rotuer);
 app.use(function (req, res) {
   res.send("404 not found");
