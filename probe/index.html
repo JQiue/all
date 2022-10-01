@@ -13,7 +13,7 @@
         <p> CPU：<progress max="100" :value="info.cpu"></progress>{{info.cpu}}/100%</p>
         <p> 内存：<progress max="100" :value="info.mem"></progress>{{info.mem}}/100%</p>
         <p> 硬盘：<progress max="100" :value="info.disk"></progress>{{info.disk}}/100%</p>
-        <p> 网络：下载 {{info.rx}}KB 上传 {{info.tx}}KB</p>
+        <p> 网络：下载 {{info.tx}}KB 上传 {{info.rx}}KB</p>
         <p>系统运行时间：{{(info.uptime / 60 / 60).toFixed(1)}} 小时</p>
     </div>
     <script crossorigin="anonymous"
@@ -21,7 +21,7 @@
         src="https://lib.baomitu.com/vue/2.7.7/vue.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        axios.defaults.baseURL = 'http://all.jinqiu.wang/api/v1/probe';
+        axios.defaults.baseURL = 'http://localhost:1236/api/v1/probe';
         Vue.prototype.$http = axios
         const app = new Vue({
             el: "#app",
@@ -45,12 +45,13 @@
             },
             methods: {
                 async getInfo() {
-                    const { data } = await this.$http.get('/get')
-                    data.cpu = data.cpu.toFixed(2) * 100;
-                    data.mem = data.mem.toFixed(2) * 100;
-                    data.rx = (data.rx / 1024).toFixed(2)
-                    data.tx = (data.tx / 1024).toFixed(2)
+                    const { data } = await this.$http.get('/get');
+                    data.cpu = Number(data.cpu.toFixed(2)) * 100;
+                    data.mem = Number(data.mem.toFixed(2)) * 100;
+                    data.rx = (data.rx / 1024).toFixed(2);
+                    data.tx = (data.tx / 1024).toFixed(2);
                     this.info = data;
+                    console.log(data);
                 },
             },
         });

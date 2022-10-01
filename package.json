@@ -4,6 +4,7 @@
   "author": "JQiue",
   "license": "MIT",
   "private": true,
+  "packageManager": "pnpm@7.12.1",
   "scripts": {
     "dev": "nodemon ./app.js",
     "serve": "node ./app.js"
