@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { download } = require("./controller");
+const { download, getFiles } = require("./controller");
 const fs = require("fs");
 const multer = require("multer");
+
 const upload = multer({
   dest: "./space/files",
   fileFilter(req, file, callback) { 
@@ -11,27 +12,16 @@ const upload = multer({
   }
 });
 
-const files = require("./files.json");
-
 router.post("/upload", upload.single("file"), (req, res, next) => {
-  console.log(files)
-  files[req.file.originalname] = req.file;
-  fs.writeFileSync(__dirname + "/files.json", JSON.stringify(files));
-  next();
+  upload(req, res);
 });
 
 router.get("/files", (req, res, next) => {
-  res.send(files);
+  getFiles(req, res);
 });
 
 router.get("/download", (req, res, next) => {
-  const file = files[req.query.file];
-  res.setHeader("Content-Type", file.mimetype);
-  res.setHeader(
-    "Content-Disposition",
-    `attachment; filename=${encodeURI(file.originalname)}`
-  );
-  res.send(fs.readFileSync(file.path));
+  download(req, res);
 });
 
 module.exports = router;
