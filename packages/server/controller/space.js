@@ -3,7 +3,7 @@ const multer  = require('multer')
 const fs = require("fs");
 const path = require("path");
 
-const files = require("./files.json");
+const files = require("../files.json");
 
 // 获取文件列表
 const getFiles = (req, res) => {

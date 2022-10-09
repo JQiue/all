@@ -1,0 +1,32 @@
+body {
+  background-color: #fafafa;
+}
+
+.app {
+  margin: 0 auto;
+  max-width: 1460px;
+}
+
+h1 small {
+  position: relative;
+  top: -15px;
+  display: inline-block;
+  margin: 0 0 0 5px;
+  width: 40px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  border-radius: 10px;
+  background-color: black;
+  font-size: 12px;
+  color: #fff;
+}
+
+ul li {
+  margin-top: .25em;
+}
+
+ul li code {
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+  background-color: #eff1f3;
+}
